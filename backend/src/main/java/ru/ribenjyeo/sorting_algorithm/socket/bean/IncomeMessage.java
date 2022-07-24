@@ -4,13 +4,18 @@ import ru.ribenjyeo.sorting_algorithm.bean.SortType;
 
 public class IncomeMessage {
     private SortType sortType;
-    private boolean drop;
+    private boolean play;
+    private boolean stop;
 
     public SortType getSortType() {
         return sortType;
     }
 
-    public boolean isDrop() {
-        return drop;
+    public boolean isStop() {
+        return stop;
+    }
+
+    public boolean isPlay() {
+        return play;
     }
 }

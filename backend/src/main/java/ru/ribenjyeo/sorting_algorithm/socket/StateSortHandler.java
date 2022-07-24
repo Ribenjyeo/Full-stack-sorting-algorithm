@@ -12,8 +12,8 @@ import ru.ribenjyeo.sorting_algorithm.bean.SortType;
 import ru.ribenjyeo.sorting_algorithm.socket.bean.IncomeMessage;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class StateSortHandler extends TextWebSocketHandler {
 
@@ -21,7 +21,7 @@ public class StateSortHandler extends TextWebSocketHandler {
 
     private final Gson gson = new Gson ();
     private final SortServiceFactory sortServiceFactory;
-    private final Map<WebSocketSession, SortType> states = new HashMap<> ();
+    private final Map<WebSocketSession, SortType> states = new ConcurrentHashMap<> ();
 
     public StateSortHandler(SortServiceFactory sortServiceFactory) {
         this.sortServiceFactory = sortServiceFactory;
@@ -34,24 +34,28 @@ public class StateSortHandler extends TextWebSocketHandler {
             SortLog log = sortServiceFactory.get (sortType).pollLong (sortType.name ());
             TextMessage msg = new TextMessage (gson.toJson (log));
             session.sendMessage (msg);
-            } catch (IOException e) {
-                logger.error (e.getMessage ());
+            } catch (IOException | IllegalStateException e) {
+                logger.error(e.getMessage());
+                states.remove(session);
+            } catch (NullPointerException e) {
+                logger.info("Sort {}. Queue is empty. " + e.getMessage(), sortType);
             }
         }));
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        super.handleTextMessage (session, message);
-        IncomeMessage income = gson.fromJson (message.getPayload (), IncomeMessage.class);
-        SortType sortType = income.getSortType ();
-        String target = sortType.name ();
-        if(!income.isDrop ()) {
-            states.put (session, sortType);
-            sortServiceFactory.get (sortType).sort (target);
-        } else {
-            states.remove (session);
-            sortServiceFactory.get (sortType).drop(target);
+        super.handleTextMessage(session, message);
+        IncomeMessage income = gson.fromJson(message.getPayload(), IncomeMessage.class);
+        SortType sortType = income.getSortType();
+        String target = sortType.name();
+        if (income.isPlay()) {
+            states.put(session, sortType);
+            sortServiceFactory.get(sortType).sort(target);
+        }
+        if (income.isStop()) {
+            states.remove(session);
+            sortServiceFactory.get(sortType).drop(target);
         }
     }
 }

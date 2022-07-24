@@ -1,17 +1,17 @@
 package ru.ribenjyeo.sorting_algorithm.bean;
 
 public class Line {
-    private int value;
+    private int val;
 
-    public Line(int value) {
-        this.value = value;
+    public Line(int val) {
+        this.val = val;
     }
 
     public Line() {
     }
 
     public int getValue() {
-        return value;
+        return val;
     }
 
     public boolean compare(Line other) {
