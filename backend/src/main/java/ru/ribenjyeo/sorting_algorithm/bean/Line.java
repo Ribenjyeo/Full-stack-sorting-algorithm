@@ -1,7 +1,7 @@
 package ru.ribenjyeo.sorting_algorithm.bean;
 
 public class Line {
-    private  int value;
+    private int value;
 
     public Line(int value) {
         this.value = value;

@@ -18,22 +18,22 @@ import java.util.concurrent.LinkedBlockingDeque;
 //                                исходный массив сортировки                              //
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-
 abstract public class SortService {
     // Константа количества элементов генируемых элементов
     private final static int LIST_CAPACITY = 100;
     protected final Logger logger = LoggerFactory.getLogger (getClass ());
     // Карта очередей
     private final Map<String, BlockingDeque<SortLog>> sortLog = new HashMap<> ();
-    //
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    // Создание потока с неограниченной очередью
+    private final Executor executor = Executors.newSingleThreadExecutor ();
+
     // Добавление логов
     protected void addLog(String target, int i, List<Line> list) {
-        sortLog.get (target).addLast (new SortLog(list, i));
+        sortLog.get (target).addLast (new SortLog (list, i));
     }
 
     /**
-     *
+     * Получение наших логов
      *
      * @param target элемент
      * @return наш лог
@@ -41,16 +41,18 @@ abstract public class SortService {
     public SortLog pollLong(String target) {
         return sortLog.get (target).poll ();
     }
-    // Запускает логи для сортировки
+
+    // Запуск сортировыки в отдельным трейде
     public void sort(String target) {
-        if(!sortLog.containsKey (target)) {
-            List<Line> list = generateList();
+        if (!sortLog.containsKey (target)) {
+            List<Line> list = generateList ();
             sortLog.put (target, new LinkedBlockingDeque<> ());
             executor.execute (() -> {
                 sortList (target, list);
             });
         }
     }
+
     /**
      * Генирирует список элементов
      *
@@ -58,12 +60,18 @@ abstract public class SortService {
      */
     private List<Line> generateList() {
         Random random = new Random ();
-        List<Line> res = new LinkedList<>();
+        List<Line> res = new LinkedList<> ();
         for (int i = 0; i < LIST_CAPACITY; i++) {
             res.add (new Line (random.nextInt (LIST_CAPACITY)));
         }
         return res;
     }
 
+    // Метод сортировки, который нужно реализовать
     abstract protected List<Line> sortList(String target, List<Line> list);
+
+    // Остановка сортировки
+    public void drop(String target) {
+        sortLog.remove(target);
+    }
 }

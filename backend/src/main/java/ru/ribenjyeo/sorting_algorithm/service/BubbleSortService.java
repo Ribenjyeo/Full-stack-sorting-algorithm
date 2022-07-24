@@ -5,9 +5,20 @@ import ru.ribenjyeo.sorting_algorithm.bean.Line;
 
 import java.util.List;
 
+//////////////////////////////////////////////////////////////////////////////////
+//  BubbleSortService - класс, который реализует алгоритм сортировки пузырьком  //
+//////////////////////////////////////////////////////////////////////////////////
+
 @Service
 public class BubbleSortService extends SortService {
 
+    /**
+     * Сортировка пузырьком
+     *
+     * @param target логи
+     * @param list   неотсортированный список
+     * @return отсортированный список
+     */
     @Override
     protected List<Line> sortList(String target, List<Line> list) {
         boolean found = true;
@@ -20,7 +31,7 @@ public class BubbleSortService extends SortService {
                     found = true;
                     list.set (i, next);
                     list.set (i + 1, current);
-                    addLog(target, i, list);
+                    addLog (target, i, list);
                 }
             }
         }
