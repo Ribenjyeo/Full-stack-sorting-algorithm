@@ -40,7 +40,7 @@ public class QuickSortService extends SortService {
     private int partition(String target, List<Line> list, int left, int right) {
         int counter = left;
         for (int i = left; i < right; i++) {
-            if (list.get (i).compare (list.get (right))) {
+            if (list.get (i).needToReplace (list.get (right))) {
                 Line temp = list.get (counter);
                 list.set (counter, list.get (i));
                 list.set (i, temp);

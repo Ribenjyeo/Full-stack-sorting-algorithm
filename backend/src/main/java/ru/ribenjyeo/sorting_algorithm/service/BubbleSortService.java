@@ -27,7 +27,7 @@ public class BubbleSortService extends SortService {
             for (int i = 0; i < list.size () - 1; i++) {
                 Line current = list.get (i);
                 Line next = list.get (i + 1);
-                if (current.compare (next)) {
+                if (current.needToReplace (next)) {
                     found = true;
                     list.set (i, next);
                     list.set (i + 1, current);
