@@ -30,6 +30,16 @@ abstract public class SortService {
     private int WAIT_TIME = 100;
     private Future<?> task;
 
+    private final static List<Line> template;
+
+    static {
+        Random random = new Random ();
+        template = new LinkedList<> ();
+        for (int i = 0; i < LIST_CAPACITY; i++) {
+            template.add (new Line (random.nextInt (LIST_CAPACITY)));
+        }
+    }
+
 
     // Добавление логов
     protected void addLog(String target, int i, List<Line> list) {
@@ -89,12 +99,7 @@ abstract public class SortService {
      * @return список элементов
      */
     private List<Line> generateList() {
-        Random random = new Random ();
-        List<Line> res = new LinkedList<> ();
-        for (int i = 0; i < LIST_CAPACITY; i++) {
-            res.add (new Line (random.nextInt (LIST_CAPACITY)));
-        }
-        return res;
+        return new LinkedList<> (template);
     }
 
     // Метод сортировки, который нужно реализовать
